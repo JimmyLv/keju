@@ -5,13 +5,13 @@ import firebase from 'firebase';
 
 // Configure Firebase.
 const config = {
-  apiKey: "AIzaSyAxCeyEAhS3S_g7zp2R5gpwhUgvATn1KWA",
-  authDomain: "keju-26a38.firebaseapp.com",
-  databaseURL: "https://keju-26a38.firebaseio.com",
-  projectId: "keju-26a38",
-  storageBucket: "keju-26a38.appspot.com",
-  messagingSenderId: "758901117013",
-  appId: "1:758901117013:web:424f99fbaecd44d3b084dc"
+  apiKey: "AIzaSyBa4LhzHpTWnssn2_GhOM4SBhuTkBj_5qY",
+  authDomain: "jiker-keju.firebaseapp.com",
+  databaseURL: "https://jiker-keju.firebaseio.com",
+  projectId: "jiker-keju",
+  storageBucket: "jiker-keju.appspot.com",
+  messagingSenderId: "163275740455",
+  appId: "1:163275740455:web:60b499e10edde65ac00502"
 };
 firebase.initializeApp(config);
 

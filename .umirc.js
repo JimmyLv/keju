@@ -7,7 +7,8 @@ export default {
       path: '/',
       component: '../layouts/index',
       routes: [
-        { path: '/', component: '../pages/index' }
+        { path: '/', component: '../pages/index' },
+        { path: '/start', component: '../pages/start' }
       ]
     }
   ],
@@ -19,7 +20,7 @@ export default {
       dynamicImport: { webpackChunkName: true },
       title: 'keju',
       dll: false,
-      
+
       routes: {
         exclude: [
           /models\//,
