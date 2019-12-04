@@ -1,4 +1,4 @@
-import request from '@octokit/request';
+import { request } from '@octokit/request';
 import Octokit from '@octokit/rest';
 
 // Compare: https://developer.github.com/v3/repos/#list-organization-repositories
