@@ -2,30 +2,24 @@
 import React from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
-
-// Configure Firebase.
-const config = {
-  apiKey: 'AIzaSyBa4LhzHpTWnssn2_GhOM4SBhuTkBj_5qY',
-  authDomain: 'jiker-keju.firebaseapp.com',
-  databaseURL: 'https://jiker-keju.firebaseio.com',
-  projectId: 'jiker-keju',
-  storageBucket: 'jiker-keju.appspot.com',
-  messagingSenderId: '163275740455',
-  appId: '1:163275740455:web:60b499e10edde65ac00502',
-};
-firebase.initializeApp(config);
+import { writeUserData } from '../../services/firebase';
+import { createGitHubClient, listPrivateRepos, listRepos } from '../../services/github';
 
 // Configure FirebaseUI.
 const uiConfig = {
   // Popup signin flow rather than redirect flow.
   signInFlow: 'popup',
   // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  signInSuccessUrl: '/start',
+  // signInSuccessUrl: '/start',
   // We will display Google and Facebook as auth providers.
   signInOptions: [
     // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.GithubAuthProvider.PROVIDER_ID,
+    { provider: firebase.auth.GithubAuthProvider.PROVIDER_ID, scopes: ['repo'] },
   ],
+  callbacks: {
+    // Avoid redirects after sign-in.
+    signInSuccessWithAuthResult: () => false,
+  },
 };
 
 export default class SignInScreen extends React.Component {
@@ -36,9 +30,42 @@ export default class SignInScreen extends React.Component {
 
   // Listen to the Firebase Auth state and set the local state.
   componentDidMount() {
-    this.unregisterAuthObserver = firebase
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      console.log('user', user);
+
+      this.setState({ isSignedIn: !!user });
+      user.getIdToken().then(async accessToken => {
+        console.log('accessToken', accessToken);
+        writeUserData(user.uid, accessToken);
+        const client = createGitHubClient(accessToken);
+        await listRepos(client);
+        await listPrivateRepos(accessToken);
+      });
+    });
+    firebase
       .auth()
-      .onAuthStateChanged(user => this.setState({ isSignedIn: !!user }));
+      .getRedirectResult()
+      .then(function(result) {
+        if (result.credential) {
+          // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+          var token = result.credential.accessToken;
+          console.log('GitHub Access Token', token);
+          // ...
+        }
+        // The signed-in user info.
+        var user = result.user;
+        console.log('GitHub user', user);
+      })
+      .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      });
   }
 
   // Make sure we un-register Firebase observers when the component unmounts.
@@ -63,7 +90,7 @@ export default class SignInScreen extends React.Component {
       <div>
         <h1>My App</h1>
         <p>Welcome {currentUser.displayName}! You are now signed-in!</p>
-        <button  onClick={() => firebase.auth().signOut()}>Sign-out</button>
+        <button onClick={() => firebase.auth().signOut()}>Sign-out</button>
       </div>
     );
   }
