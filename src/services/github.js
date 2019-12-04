@@ -21,11 +21,10 @@ export const createGitHubClient = accessToken =>
 export const listPrivateRepos = async accessToken => {
   // Following GitHub docs formatting:
   // https://developer.github.com/v3/repos/#list-organization-repositories
-  const result = await request('GET /users/:username/repos', {
+  const result = await request('GET /user/repos', {
     headers: {
       authorization: `token ${accessToken}`,
     },
-    username: 'jimmylv',
     type: 'private',
   });
 
