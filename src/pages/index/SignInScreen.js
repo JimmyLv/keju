@@ -37,8 +37,8 @@ export default class SignInScreen extends React.Component {
       user.getIdToken().then(async accessToken => {
         console.log('accessToken', accessToken);
         writeUserData(user.uid, accessToken);
-        const client = createGitHubClient(accessToken);
-        await listRepos(client);
+        // const client = createGitHubClient(accessToken);
+        // await listRepos(client);
         await listPrivateRepos(accessToken);
       });
     });

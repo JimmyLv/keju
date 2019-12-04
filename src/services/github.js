@@ -5,7 +5,7 @@ import Octokit from '@octokit/rest';
 export const listRepos = octokit =>
   octokit.repos
     .listForOrg({
-      org: 'jimmylv',
+      org: 'octokit',
       type: 'public',
     })
     .then(({ data, headers, status }) => {
@@ -21,11 +21,11 @@ export const createGitHubClient = accessToken =>
 export const listPrivateRepos = async accessToken => {
   // Following GitHub docs formatting:
   // https://developer.github.com/v3/repos/#list-organization-repositories
-  const result = await request('GET /orgs/:org/repos', {
+  const result = await request('GET /users/:username/repos', {
     headers: {
       authorization: `token ${accessToken}`,
     },
-    org: 'jimmylv',
+    username: 'jimmylv',
     type: 'private',
   });
 
