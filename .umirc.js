@@ -1,6 +1,7 @@
 
 // ref: https://umijs.org/config/
 export default {
+  base: '/keju',
   treeShaking: true,
   routes: [
     {
