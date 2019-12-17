@@ -1,7 +1,8 @@
 
 // ref: https://umijs.org/config/
 export default {
-  base: '/keju',
+  base: '/keju/',
+  publicPath: '/keju/',
   treeShaking: true,
   routes: [
     {
@@ -31,6 +32,9 @@ export default {
           /components\//,
         ],
       },
+    }],
+    ['umi-plugin-gh-pages', {
+      dest: 'dist'
     }],
   ],
 }
