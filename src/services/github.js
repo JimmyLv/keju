@@ -29,4 +29,5 @@ export const listPrivateRepos = async accessToken => {
   });
 
   console.log(`${result.data.length} repos found.`, result.data);
+  return result.data;
 };

@@ -1,14 +1,16 @@
-// Import FirebaseAuth and firebase.
+import firebase from 'firebase';
 import React from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase from 'firebase';
 import { writeUserData } from '../../services/firebase';
-import { createGitHubClient, listPrivateRepos, listRepos } from '../../services/github';
+import { listPrivateRepos } from '../../services/github';
 
 export default class SignInScreen extends React.Component {
   // The component's Local state.
   state = {
     isSignedIn: false, // Local signed-in state.
+    user: {
+      repos: [],
+    },
   };
 
   // Configure FirebaseUI.
@@ -28,12 +30,14 @@ export default class SignInScreen extends React.Component {
         // User successfully signed in.
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
-        console.log('authResult, redirectUrl', authResult, redirectUrl);
-
         const accessToken = authResult.credential.accessToken;
-        console.log('accessToken', accessToken);
-        await listPrivateRepos(accessToken);
         writeUserData(authResult.user.uid, accessToken);
+
+        console.log('authResult accessToken', accessToken);
+        const repos = await listPrivateRepos(accessToken);
+        this.setState({
+          user: { repos },
+        });
 
         return false;
       },
@@ -46,13 +50,14 @@ export default class SignInScreen extends React.Component {
       console.log('user', user);
 
       this.setState({ isSignedIn: !!user });
-      user.getIdToken().then(async accessToken => {
-        console.log('accessToken', accessToken);
-        writeUserData(user.uid, accessToken);
-        // const client = createGitHubClient(accessToken);
-        // await listRepos(client);
-        // await listPrivateRepos(accessToken);
-      });
+      user &&
+        user.getIdToken().then(async accessToken => {
+          console.log('user.getIdToken() accessToken', accessToken);
+          writeUserData(user.uid, accessToken);
+          // const client = createGitHubClient(accessToken);
+          // await listRepos(client);
+          // await listPrivateRepos(accessToken);
+        });
     });
   }
 
@@ -62,7 +67,8 @@ export default class SignInScreen extends React.Component {
   }
 
   render() {
-    if (!this.state.isSignedIn) {
+    const { isSignedIn, user } = this.state;
+    if (!isSignedIn) {
       return (
         <div>
           <h1>My App</h1>
@@ -79,6 +85,13 @@ export default class SignInScreen extends React.Component {
       <div>
         <h1>My App</h1>
         <p>Welcome {currentUser.displayName}! You are now signed-in!</p>
+        {user.repos && (
+          <ul>
+            {user.repos.map(repo => (
+              <li>{repo}</li>
+            ))}
+          </ul>
+        )}
         <button onClick={() => firebase.auth().signOut()}>Sign-out</button>
       </div>
     );
