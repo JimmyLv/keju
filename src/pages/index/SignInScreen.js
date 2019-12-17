@@ -88,7 +88,9 @@ export default class SignInScreen extends React.Component {
         {user.repos && (
           <ul>
             {user.repos.map(repo => (
-              <li>{repo}</li>
+              <li>
+                <a href={repo.html_url}>{`${repo.full_name} | ${repo.description}`}</a>
+              </li>
             ))}
           </ul>
         )}
